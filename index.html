@@ -1,48 +1,62 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gerador de Moldura</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerador de Foto com Moldura</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f2f2f2;
+      background:
+        linear-gradient(rgba(255,255,255,0.25), rgba(255,255,255,0.25)),
+        url("fundo.png");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
+      min-height: 100dvh;
+      padding: 25px;
     }
 
     .container {
-      background: white;
-      padding: 25px;
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(8px);
+      padding: 28px;
+      border-radius: 24px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.18);
       text-align: center;
-      max-width: 420px;
-      width: 90%;
+      max-width: 460px;
+      width: 100%;
     }
 
     h1 {
-      font-size: 22px;
-      margin-bottom: 10px;
+      font-size: 26px;
+      margin: 0 0 12px;
+      line-height: 1.2;
     }
 
     p {
-      font-size: 14px;
+      font-size: 16px;
       color: #555;
+      margin-bottom: 24px;
     }
 
-    input, button {
+    input,
+    button {
       width: 100%;
-      padding: 12px;
-      margin-top: 12px;
-      border-radius: 10px;
+      padding: 14px;
+      margin-top: 16px;
+      border-radius: 14px;
       border: none;
-      font-size: 15px;
+      font-size: 16px;
     }
 
     input {
@@ -62,10 +76,44 @@
 
     canvas {
       width: 100%;
-      max-width: 350px;
-      margin-top: 20px;
-      border-radius: 15px;
-      background: #ddd;
+      aspect-ratio: 1 / 1;
+      max-width: 390px;
+      margin-top: 28px;
+      border-radius: 18px;
+      background: #f7f7f7;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        align-items: flex-start;
+        padding: 35px 16px;
+      }
+
+      .container {
+        padding: 24px 18px;
+        border-radius: 24px;
+        margin-top: 20px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      p {
+        font-size: 15px;
+        margin-bottom: 22px;
+      }
+
+      input,
+      button {
+        font-size: 15px;
+        padding: 14px;
+      }
+
+      canvas {
+        margin-top: 30px;
+        max-width: 100%;
+      }
     }
   </style>
 </head>
@@ -75,11 +123,21 @@
     <h1>Gerador de Foto com Moldura</h1>
     <p>Envie sua foto e baixe com a moldura pronta.</p>
 
-    <input type="file" id="upload" accept="image/*">
+    <input
+      type="file"
+      id="upload"
+      accept="image/*"
+    >
 
-    <canvas id="canvas" width="1080" height="1080"></canvas>
+    <canvas
+      id="canvas"
+      width="1080"
+      height="1080"
+    ></canvas>
 
-    <button onclick="baixarImagem()">Baixar imagem</button>
+    <button onclick="baixarImagem()">
+      Baixar imagem
+    </button>
   </div>
 
   <script>
@@ -117,10 +175,20 @@
     });
 
     function desenharCanvas() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
 
       ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
 
       if (fotoUsuario) {
         desenharImagemCobrindo(
@@ -132,30 +200,60 @@
         );
       }
 
-      ctx.drawImage(moldura, 0, 0, canvas.width, canvas.height);
+      ctx.drawImage(
+        moldura,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
     }
 
-    function desenharImagemCobrindo(img, x, y, largura, altura) {
-      const proporcaoCanvas = largura / altura;
-      const proporcaoImagem = img.width / img.height;
+    function desenharImagemCobrindo(
+      img,
+      x,
+      y,
+      largura,
+      altura
+    ) {
+      const proporcaoCanvas =
+        largura / altura;
+
+      const proporcaoImagem =
+        img.width / img.height;
 
       let novaLargura;
       let novaAltura;
       let posX;
       let posY;
 
-      if (proporcaoImagem > proporcaoCanvas) {
+      if (
+        proporcaoImagem >
+        proporcaoCanvas
+      ) {
         novaAltura = altura;
-        novaLargura = img.width * (altura / img.height);
 
-        posX = x - (novaLargura - largura) / 2;
+        novaLargura =
+          img.width *
+          (altura / img.height);
+
+        posX =
+          x -
+          (novaLargura - largura) / 2;
+
         posY = y;
       } else {
         novaLargura = largura;
-        novaAltura = img.height * (largura / img.width);
+
+        novaAltura =
+          img.height *
+          (largura / img.width);
 
         posX = x;
-        posY = y - (novaAltura - altura) / 2;
+
+        posY =
+          y -
+          (novaAltura - altura) / 2;
       }
 
       ctx.drawImage(
@@ -167,38 +265,51 @@
       );
     }
 
-    function isIphone() {
-      return /iPhone|iPad|iPod/i.test(navigator.userAgent);
-    }
-
     function baixarImagem() {
-  const imagemFinal = canvas.toDataURL("image/jpeg", 0.95);
+      const imagemFinal =
+        canvas.toDataURL(
+          "image/jpeg",
+          0.95
+        );
 
-  const iphone = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      const iphone =
+        /iPhone|iPad|iPod/i.test(
+          navigator.userAgent
+        );
 
-  if (iphone) {
-    const novaAba = window.open("", "_blank");
+      if (iphone) {
+        const novaAba =
+          window.open(
+            "",
+            "_blank"
+          );
 
-    novaAba.document.body.style.margin = "0";
-    novaAba.document.body.style.background = "#000";
-    novaAba.document.body.style.display = "flex";
-    novaAba.document.body.style.justifyContent = "center";
-    novaAba.document.body.style.alignItems = "center";
-    novaAba.document.body.style.minHeight = "100vh";
+        novaAba.document.body.style.margin = "0";
+        novaAba.document.body.style.background = "#000";
+        novaAba.document.body.style.display = "flex";
+        novaAba.document.body.style.justifyContent = "center";
+        novaAba.document.body.style.alignItems = "center";
+        novaAba.document.body.style.minHeight = "100vh";
 
-    const img = novaAba.document.createElement("img");
-    img.src = imagemFinal;
-    img.style.maxWidth = "100%";
-    img.style.maxHeight = "100%";
+        const img =
+          novaAba.document.createElement("img");
 
-    novaAba.document.body.appendChild(img);
-  } else {
-    const link = document.createElement("a");
-    link.download = "foto-com-moldura.jpg";
-    link.href = imagemFinal;
-    link.click();
-  }
-}
+        img.src = imagemFinal;
+        img.style.maxWidth = "100%";
+        img.style.maxHeight = "100%";
+
+        novaAba.document.body.appendChild(img);
+      } else {
+        const link =
+          document.createElement("a");
+
+        link.download =
+          "foto-com-moldura.jpg";
+
+        link.href = imagemFinal;
+        link.click();
+      }
+    }
   </script>
 
 </body>
