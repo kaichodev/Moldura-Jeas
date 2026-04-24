@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Gerador de Moldura</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 25px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      text-align: center;
+      max-width: 420px;
+      width: 90%;
+    }
+
+    h1 {
+      font-size: 22px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 14px;
+      color: #555;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 15px;
+    }
+
+    input {
+      background: #eee;
+    }
+
+    button {
+      background: #111;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #333;
+    }
+
+    canvas {
+      width: 100%;
+      max-width: 350px;
+      margin-top: 20px;
+      border-radius: 15px;
+      background: #ddd;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Gerador de Foto com Moldura</h1>
+    <p>Envie sua foto e baixe com a moldura pronta.</p>
+
+    <input type="file" id="upload" accept="image/*">
+
+    <canvas id="canvas" width="1080" height="1080"></canvas>
+
+    <button onclick="baixarImagem()">Baixar imagem</button>
+  </div>
+
+  <script>
+    const upload = document.getElementById("upload");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    const moldura = new Image();
+    moldura.src = "moldura.png";
+
+    let fotoUsuario = null;
+
+    moldura.onload = function () {
+      desenharCanvas();
+    };
+
+    upload.addEventListener("change", function (event) {
+      const arquivo = event.target.files[0];
+
+      if (!arquivo) return;
+
+      const reader = new FileReader();
+
+      reader.onload = function (e) {
+        fotoUsuario = new Image();
+        fotoUsuario.onload = function () {
+          desenharCanvas();
+        };
+        fotoUsuario.src = e.target.result;
+      };
+
+      reader.readAsDataURL(arquivo);
+    });
+
+    function desenharCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      if (fotoUsuario) {
+        desenharImagemCobrindo(fotoUsuario, 0, 0, canvas.width, canvas.height);
+      }
+
+      ctx.drawImage(moldura, 0, 0, canvas.width, canvas.height);
+    }
+
+    function desenharImagemCobrindo(img, x, y, largura, altura) {
+      const proporcaoCanvas = largura / altura;
+      const proporcaoImagem = img.width / img.height;
+
+      let novaLargura, novaAltura, posX, posY;
+
+      if (proporcaoImagem > proporcaoCanvas) {
+        novaAltura = altura;
+        novaLargura = img.width * (altura / img.height);
+        posX = x - (novaLargura - largura) / 2;
+        posY = y;
+      } else {
+        novaLargura = largura;
+        novaAltura = img.height * (largura / img.width);
+        posX = x;
+        posY = y - (novaAltura - altura) / 2;
+      }
+
+      ctx.drawImage(img, posX, posY, novaLargura, novaAltura);
+    }
+
+    function baixarImagem() {
+      const link = document.createElement("a");
+      link.download = "foto-com-moldura.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
+  </script>
+
+</body>
+</html>
