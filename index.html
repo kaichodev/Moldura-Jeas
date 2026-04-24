@@ -1,325 +1,428 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gerador de Foto com Moldura</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gerador de Foto com Moldura</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background:
-        linear-gradient(rgba(255,255,255,0.25), rgba(255,255,255,0.25)),
-        url("fundo.png");
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100dvh;
-      padding: 25px;
-    }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background:
+    linear-gradient(rgba(255,255,255,0.15), rgba(255,255,255,0.15)),
+    url("fundo.png");
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 15px;
+}
 
-    .container {
-      background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(8px);
-      padding: 28px;
-      border-radius: 24px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.18);
-      text-align: center;
-      max-width: 460px;
-      width: 100%;
-    }
+.page {
+  width: 100%;
+  max-width: 520px;
+  text-align: center;
+}
 
-    h1 {
-      font-size: 26px;
-      margin: 0 0 12px;
-      line-height: 1.2;
-    }
+.logo-topo {
+  width: 95px;
+  margin-bottom: 12px;
+}
 
-    p {
-      font-size: 16px;
-      color: #555;
-      margin-bottom: 24px;
-    }
+.container {
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(10px);
+  padding: 28px;
+  border-radius: 28px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.18);
+  width: 100%;
+}
 
-    input,
-    button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 16px;
-      border-radius: 14px;
-      border: none;
-      font-size: 16px;
-    }
+h1 {
+  margin: 0 0 10px;
+  font-size: 26px;
+}
 
-    input {
-      background: #eee;
-    }
+p {
+  margin-bottom: 24px;
+  color: #555;
+  font-size: 15px;
+}
 
-    button {
-      background: #111;
-      color: white;
-      cursor: pointer;
-      font-weight: bold;
-    }
+input {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  background: #eee;
+  margin-bottom: 25px;
+}
 
-    #canvasPreview {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      max-width: 390px;
-      margin-top: 28px;
-      border-radius: 50%;
-      background: #f7f7f7;
-      cursor: grab;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
-    }
+.preview-area {
+  position: relative;
+  width: 100%;
+  max-width: 390px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto 28px;
+}
 
-    @media (max-width: 480px) {
-      body {
-        align-items: flex-start;
-        padding: 35px 16px;
-      }
+#canvasQuadradoPreview {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  opacity: 0.22;
+  border-radius: 18px;
+  z-index: 1;
+}
 
-      .container {
-        padding: 24px 18px;
-        margin-top: 20px;
-      }
+#canvasPreview {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  cursor: grab;
+  z-index: 2;
+  box-shadow: 0 14px 35px rgba(0,0,0,0.22);
+}
 
-      h1 {
-        font-size: 24px;
-      }
+#setaEsquerda,
+#setaDireita {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: #b50000;
+  font-size: 70px;
+  cursor: pointer;
+  z-index: 5;
+  font-weight: bold;
+  line-height: 1;
+}
 
-      p {
-        font-size: 15px;
-      }
+#setaEsquerda {
+  left: -55px;
+}
 
-      #canvasPreview {
-        margin-top: 30px;
-      }
-    }
-  </style>
+#setaDireita {
+  right: -55px;
+}
+
+button.download {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  background: #111;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button.download:hover {
+  background: #333;
+}
+
+#canvasFinal {
+  display: none;
+}
+
+@media (max-width: 520px) {
+  .container {
+    padding: 22px 16px;
+  }
+
+  h1 {
+    font-size: 22px;
+  }
+
+  #setaEsquerda {
+    left: -28px;
+  }
+
+  #setaDireita {
+    right: -28px;
+  }
+
+  #setaEsquerda,
+  #setaDireita {
+    font-size: 54px;
+  }
+}
+</style>
 </head>
 
 <body>
 
+<div class="page">
+
+  <img src="logo.png" class="logo-topo">
+
   <div class="container">
+
     <h1>Gerador de Foto com Moldura</h1>
     <p>Envie sua foto, arraste para ajustar e baixe completa.</p>
 
     <input type="file" id="upload" accept="image/*">
 
-    <canvas id="canvasPreview" width="1080" height="1080"></canvas>
-    <canvas id="canvasFinal" width="1080" height="1080" style="display:none;"></canvas>
+    <div class="preview-area">
 
-    <button onclick="baixarImagem()">Baixar imagem completa</button>
+      <canvas id="canvasQuadradoPreview" width="1080" height="1080"></canvas>
+
+      <button id="setaEsquerda" type="button">‹</button>
+
+      <canvas id="canvasPreview" width="1080" height="1080"></canvas>
+
+      <button id="setaDireita" type="button">›</button>
+
+    </div>
+
+    <canvas id="canvasFinal" width="1080" height="1080"></canvas>
+
+    <button class="download" onclick="baixarImagem()">
+      Baixar imagem completa
+    </button>
+
   </div>
+</div>
 
-  <script>
-    const upload = document.getElementById("upload");
+<script>
+const upload = document.getElementById("upload");
 
-    const canvasPreview = document.getElementById("canvasPreview");
-    const ctxPreview = canvasPreview.getContext("2d");
+const canvasPreview = document.getElementById("canvasPreview");
+const ctxPreview = canvasPreview.getContext("2d");
 
-    const canvasFinal = document.getElementById("canvasFinal");
-    const ctxFinal = canvasFinal.getContext("2d");
+const canvasQuadradoPreview = document.getElementById("canvasQuadradoPreview");
+const ctxQuadradoPreview = canvasQuadradoPreview.getContext("2d");
 
-    const moldura = new Image();
-    moldura.src = "moldura.png";
+const canvasFinal = document.getElementById("canvasFinal");
+const ctxFinal = canvasFinal.getContext("2d");
 
-    let fotoUsuario = null;
+const setaEsquerda = document.getElementById("setaEsquerda");
+const setaDireita = document.getElementById("setaDireita");
 
-    let escala = 1;
-    let posX = 0;
-    let posY = 0;
+const molduras = [
+  "moldura1.png",
+  "moldura2.png",
+  "moldura3.png"
+];
 
-    let arrastando = false;
-    let inicioX = 0;
-    let inicioY = 0;
+let indiceMoldura = 0;
 
-    moldura.onload = function () {
-      desenharCanvas();
+const moldura = new Image();
+moldura.src = molduras[indiceMoldura];
+
+let fotoUsuario = null;
+
+let escala = 1;
+let posX = 0;
+let posY = 0;
+
+let arrastando = false;
+let inicioX = 0;
+let inicioY = 0;
+
+moldura.onload = function () {
+  desenharTudo();
+};
+
+function trocarMoldura(direcao) {
+  indiceMoldura += direcao;
+
+  if (indiceMoldura < 0) {
+    indiceMoldura = molduras.length - 1;
+  }
+
+  if (indiceMoldura >= molduras.length) {
+    indiceMoldura = 0;
+  }
+
+  moldura.src = molduras[indiceMoldura];
+}
+
+setaEsquerda.addEventListener("click", function () {
+  trocarMoldura(-1);
+});
+
+setaDireita.addEventListener("click", function () {
+  trocarMoldura(1);
+});
+
+upload.addEventListener("change", function (event) {
+  const arquivo = event.target.files[0];
+  if (!arquivo) return;
+
+  const reader = new FileReader();
+
+  reader.onload = function (e) {
+    fotoUsuario = new Image();
+
+    fotoUsuario.onload = function () {
+      escala = Math.max(
+        1080 / fotoUsuario.width,
+        1080 / fotoUsuario.height
+      );
+
+      posX = (1080 - (fotoUsuario.width * escala)) / 2;
+      posY = (1080 - (fotoUsuario.height * escala)) / 2;
+
+      desenharTudo();
     };
 
-    upload.addEventListener("change", function (event) {
-      const arquivo = event.target.files[0];
+    fotoUsuario.src = e.target.result;
+  };
 
-      if (!arquivo) return;
+  reader.readAsDataURL(arquivo);
+});
 
-      const reader = new FileReader();
+function desenharTudo() {
+  desenhar(ctxFinal, false);
+  desenhar(ctxQuadradoPreview, false);
+  desenhar(ctxPreview, true);
+}
 
-      reader.onload = function (e) {
-        fotoUsuario = new Image();
+function desenhar(ctx, redondo) {
+  ctx.clearRect(0, 0, 1080, 1080);
 
-        fotoUsuario.onload = function () {
-          escala = Math.max(
-            canvasPreview.width / fotoUsuario.width,
-            canvasPreview.height / fotoUsuario.height
-          );
+  if (redondo) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(540, 540, 540, 0, Math.PI * 2);
+    ctx.clip();
+  }
 
-          posX = (canvasPreview.width - fotoUsuario.width * escala) / 2;
-          posY = (canvasPreview.height - fotoUsuario.height * escala) / 2;
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0, 0, 1080, 1080);
 
-          desenharCanvas();
-        };
+  if (fotoUsuario) {
+    ctx.save();
+    ctx.filter = "blur(35px)";
+    ctx.globalAlpha = 0.75;
 
-        fotoUsuario.src = e.target.result;
-      };
+    const escalaFundo = Math.max(
+      1080 / fotoUsuario.width,
+      1080 / fotoUsuario.height
+    ) * 1.2;
 
-      reader.readAsDataURL(arquivo);
-    });
+    const larguraFundo = fotoUsuario.width * escalaFundo;
+    const alturaFundo = fotoUsuario.height * escalaFundo;
 
-    function desenharCanvas() {
-      desenhar(ctxFinal, false);
-      desenhar(ctxPreview, true);
-    }
+    const fundoX = (1080 - larguraFundo) / 2;
+    const fundoY = (1080 - alturaFundo) / 2;
 
-    function desenhar(ctx, redondo) {
-      ctx.clearRect(0, 0, 1080, 1080);
+    ctx.drawImage(
+      fotoUsuario,
+      fundoX,
+      fundoY,
+      larguraFundo,
+      alturaFundo
+    );
 
-      if (redondo) {
-        ctx.save();
-        ctx.beginPath();
-        ctx.arc(540, 540, 540, 0, Math.PI * 2);
-        ctx.clip();
-      }
+    ctx.restore();
 
-      ctx.fillStyle = "#ffffff";
-      ctx.fillRect(0, 0, 1080, 1080);
+    ctx.drawImage(
+      fotoUsuario,
+      posX,
+      posY,
+      fotoUsuario.width * escala,
+      fotoUsuario.height * escala
+    );
+  }
 
-      if (fotoUsuario) {
-        ctx.save();
-        ctx.filter = "blur(35px)";
-        ctx.globalAlpha = 0.75;
+  ctx.drawImage(moldura, 0, 0, 1080, 1080);
 
-        const escalaFundo = Math.max(
-          1080 / fotoUsuario.width,
-          1080 / fotoUsuario.height
-        ) * 1.2;
+  if (redondo) {
+    ctx.restore();
+  }
+}
 
-        const fundoLargura = fotoUsuario.width * escalaFundo;
-        const fundoAltura = fotoUsuario.height * escalaFundo;
+function pegarPosicao(event) {
+  const rect = canvasPreview.getBoundingClientRect();
 
-        const fundoX = (1080 - fundoLargura) / 2;
-        const fundoY = (1080 - fundoAltura) / 2;
+  if (event.touches) {
+    return {
+      x: (event.touches[0].clientX - rect.left) * (1080 / rect.width),
+      y: (event.touches[0].clientY - rect.top) * (1080 / rect.height)
+    };
+  }
 
-        ctx.drawImage(
-          fotoUsuario,
-          fundoX,
-          fundoY,
-          fundoLargura,
-          fundoAltura
-        );
+  return {
+    x: (event.clientX - rect.left) * (1080 / rect.width),
+    y: (event.clientY - rect.top) * (1080 / rect.height)
+  };
+}
 
-        ctx.restore();
+function iniciarArraste(event) {
+  if (!fotoUsuario) return;
 
-        ctx.drawImage(
-          fotoUsuario,
-          posX,
-          posY,
-          fotoUsuario.width * escala,
-          fotoUsuario.height * escala
-        );
-      }
+  arrastando = true;
 
-      ctx.drawImage(moldura, 0, 0, 1080, 1080);
+  const pos = pegarPosicao(event);
 
-      if (redondo) {
-        ctx.restore();
-      }
-    }
+  inicioX = pos.x - posX;
+  inicioY = pos.y - posY;
 
-    function pegarPosicao(event) {
-      const rect = canvasPreview.getBoundingClientRect();
+  canvasPreview.style.cursor = "grabbing";
+}
 
-      if (event.touches) {
-        return {
-          x: (event.touches[0].clientX - rect.left) * (canvasPreview.width / rect.width),
-          y: (event.touches[0].clientY - rect.top) * (canvasPreview.height / rect.height)
-        };
-      }
+function moverFoto(event) {
+  if (!arrastando || !fotoUsuario) return;
 
-      return {
-        x: (event.clientX - rect.left) * (canvasPreview.width / rect.width),
-        y: (event.clientY - rect.top) * (canvasPreview.height / rect.height)
-      };
-    }
+  event.preventDefault();
 
-    function iniciarArraste(event) {
-      if (!fotoUsuario) return;
+  const pos = pegarPosicao(event);
 
-      arrastando = true;
+  posX = pos.x - inicioX;
+  posY = pos.y - inicioY;
 
-      const pos = pegarPosicao(event);
+  desenharTudo();
+}
 
-      inicioX = pos.x - posX;
-      inicioY = pos.y - posY;
+function pararArraste() {
+  arrastando = false;
+  canvasPreview.style.cursor = "grab";
+}
 
-      canvasPreview.style.cursor = "grabbing";
-    }
+canvasPreview.addEventListener("mousedown", iniciarArraste);
+canvasPreview.addEventListener("mousemove", moverFoto);
+canvasPreview.addEventListener("mouseup", pararArraste);
+canvasPreview.addEventListener("mouseleave", pararArraste);
 
-    function moverFoto(event) {
-      if (!arrastando || !fotoUsuario) return;
+canvasPreview.addEventListener("touchstart", iniciarArraste);
+canvasPreview.addEventListener("touchmove", moverFoto);
+canvasPreview.addEventListener("touchend", pararArraste);
 
-      event.preventDefault();
+function baixarImagem() {
+  const imagemFinal = canvasFinal.toDataURL("image/jpeg", 0.95);
 
-      const pos = pegarPosicao(event);
+  const iphone = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-      posX = pos.x - inicioX;
-      posY = pos.y - inicioY;
+  if (iphone) {
+    const novaAba = window.open("", "_blank");
 
-      desenharCanvas();
-    }
+    const img = novaAba.document.createElement("img");
+    img.src = imagemFinal;
+    img.style.maxWidth = "100%";
 
-    function pararArraste() {
-      arrastando = false;
-      canvasPreview.style.cursor = "grab";
-    }
-
-    canvasPreview.addEventListener("mousedown", iniciarArraste);
-    canvasPreview.addEventListener("mousemove", moverFoto);
-    canvasPreview.addEventListener("mouseup", pararArraste);
-    canvasPreview.addEventListener("mouseleave", pararArraste);
-
-    canvasPreview.addEventListener("touchstart", iniciarArraste);
-    canvasPreview.addEventListener("touchmove", moverFoto);
-    canvasPreview.addEventListener("touchend", pararArraste);
-
-    function baixarImagem() {
-      const imagemFinal = canvasFinal.toDataURL("image/jpeg", 0.95);
-
-      const iphone = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-      if (iphone) {
-        const novaAba = window.open("", "_blank");
-
-        novaAba.document.body.style.margin = "0";
-        novaAba.document.body.style.background = "#000";
-        novaAba.document.body.style.display = "flex";
-        novaAba.document.body.style.justifyContent = "center";
-        novaAba.document.body.style.alignItems = "center";
-        novaAba.document.body.style.minHeight = "100vh";
-
-        const img = novaAba.document.createElement("img");
-        img.src = imagemFinal;
-        img.style.maxWidth = "100%";
-        img.style.maxHeight = "100%";
-
-        novaAba.document.body.appendChild(img);
-      } else {
-        const link = document.createElement("a");
-        link.download = "foto-com-moldura.jpg";
-        link.href = imagemFinal;
-        link.click();
-      }
-    }
-  </script>
+    novaAba.document.body.style.margin = "0";
+    novaAba.document.body.style.background = "#000";
+    novaAba.document.body.appendChild(img);
+  } else {
+    const link = document.createElement("a");
+    link.download = "foto-com-moldura.jpg";
+    link.href = imagemFinal;
+    link.click();
+  }
+}
+</script>
 
 </body>
 </html>
